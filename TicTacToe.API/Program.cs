@@ -1,4 +1,5 @@
 using TicTacToe.API;
+using TicTacToe.API.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,9 +13,15 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<TicTacToeContext>();
+builder.Services.AddSignalR();
 
 var app = builder.Build();
-app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+app.UseCors(x =>
+    x.AllowAnyMethod()
+        .AllowAnyHeader()
+        .AllowCredentials()
+        .WithOrigins("http://localhost:4200", "http://192.168.68.120:4200"));
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -22,9 +29,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseRouting();
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+app.UseEndpoints(endpoints => { endpoints.MapHub<GameHub>("/game"); });
 
 app.MapControllers();
 

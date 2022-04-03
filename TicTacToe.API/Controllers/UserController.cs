@@ -41,7 +41,6 @@ namespace TicTacToe.API.Controllers
         [HttpPost("register")]
         public async Task<ActionResult<UserViewModel>> Register(LoginViewModel loginModel)
         {
-
             var user = _mapper.Map<User>(loginModel);
             await _userService.Register(user);
             var userViewModel = _mapper.Map<UserViewModel>(user);
