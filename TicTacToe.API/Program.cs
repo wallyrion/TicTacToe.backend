@@ -12,6 +12,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddSingleton<IGameService, GameService>();
 builder.Services.AddScoped<TicTacToeContext>();
 builder.Services.AddSignalR();
 
@@ -34,7 +35,11 @@ app.UseRouting();
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
-app.UseEndpoints(endpoints => { endpoints.MapHub<GameHub>("/game"); });
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapHub<GameHub>("/game");
+    //endpoints.MapHub<BroadcastHub>("/broadcast");
+});
 
 app.MapControllers();
 

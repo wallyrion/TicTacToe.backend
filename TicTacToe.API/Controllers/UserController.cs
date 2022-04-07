@@ -47,5 +47,13 @@ namespace TicTacToe.API.Controllers
 
             return Ok(userViewModel);
         }
+
+
+        [HttpGet("test")]
+        public async Task<ActionResult<UserViewModel>> Test(LoginViewModel loginModel)
+        {
+            
+            return Ok(DateTime.UtcNow.ToString());
+        }
     }
 }

@@ -1,9 +1,11 @@
-﻿using TicTacToe.API.Models;
+﻿using TicTacToe.API.Dto;
+using TicTacToe.API.Models;
+using TicTacToe.API.SignalR;
 
 namespace TicTacToe.API;
 
-public interface IUserService 
+public interface IGameService
 {
-    Task Register(User user);
-    Task<User?> Login(string email, string password);
+    Task<GameInvitation> Invite(GameInviteDto gameInviteDto);
+    Task Accept(Guid gameId);
 }

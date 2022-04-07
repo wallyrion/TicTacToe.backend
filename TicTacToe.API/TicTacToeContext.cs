@@ -6,12 +6,19 @@ namespace TicTacToe.API;
 public sealed class TicTacToeContext : DbContext
 {
     public DbSet<User> Users { get; set; } = null!;
+    public DbSet<Game> Games { get; set; } = null!;
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseCosmos(
+    {
+        optionsBuilder.UseCosmos(
             "https://tictactoe-wallyrion.documents.azure.com:443/",
             "BQOkP3R4zgJbdHwAUxr2EjrTRNuoQovIC8Fi4rRhpFS1KtMi6tDGmPKTrs47e5vKsanHZQLykInYK8bPvq6Yyw==",
             databaseName: "TicTacToeDB");
+
+        optionsBuilder
+            .LogTo(Console.WriteLine)
+            .EnableDetailedErrors();
+    }
 
     public TicTacToeContext()
     {
@@ -27,6 +34,12 @@ public sealed class TicTacToeContext : DbContext
             .ToContainer("Users")
             .HasPartitionKey(x => x.Email)
             ;
+
+        modelBuilder.Entity<Game>()
+            .ToContainer("Games")
+            .HasPartitionKey(x => x.Id)
+            ;
+
 
         #endregion
 

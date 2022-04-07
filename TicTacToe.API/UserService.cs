@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using TicTacToe.API.Models;
 
 namespace TicTacToe.API;
@@ -15,7 +14,7 @@ public class UserService : IUserService
             throw new Exception($"Email {emailExist.Email} already exists.");
         }
         
-        var res = await context.Users.AddAsync(user);
+        await context.Users.AddAsync(user);
         await context.SaveChangesAsync();
     }
 
