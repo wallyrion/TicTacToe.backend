@@ -13,15 +13,18 @@ namespace TicTacToe.API.Controllers
         private readonly IUserService _userService;
         private readonly IMapper _mapper;
         private readonly ILogger<UserController> _logger;
-
+        private readonly ITokenService _tokenService;
         public UserController(
             ILogger<UserController> logger,
             IUserService userService,
-            IMapper mapper)
+            IMapper mapper,
+            ITokenService tokenService
+            )
         {
             _logger = logger;
             _userService = userService;
             _mapper = mapper;
+            _tokenService = tokenService;
         }
 
         [HttpPost("login")]
@@ -34,18 +37,25 @@ namespace TicTacToe.API.Controllers
                 return NotFound();
             }
 
-            return Ok(_mapper.Map<UserVM>(user));
+            Tuple<string, string> tokens = await _tokenService.GenerateTokensAsync(user.Id);
+
+            var userVM = _mapper.Map<UserVM>(user);
+
+            var response = new TokenResponseVM(userVM, tokens.Item1, tokens.Item2);
+            return Ok(response);
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult<UserVM>> Register(LoginRequestVM loginModel)
+        public async Task<ActionResult<TokenResponseVM>> Register(LoginRequestVM loginModel)
         {
             var loginDto = _mapper.Map<LoginDto>(loginModel);
             var user = await _userService.Register(loginDto);
 
             var userVM = _mapper.Map<UserVM>(user);
+            var tokens = await _tokenService.GenerateTokensAsync(user.Id);
 
-            return Ok(userVM);
+            var response = new TokenResponseVM(userVM, tokens.Item1, tokens.Item2);
+            return Ok(response);
         }
 
 

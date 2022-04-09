@@ -27,19 +27,39 @@ public sealed class TicTacToeContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-
         #region PartitionKey
 
-        modelBuilder.Entity<User>()
-            .ToContainer("Users")
-            .HasPartitionKey(x => x.Email)
-            .HasKey(x => x.Id)
-            ;
+        modelBuilder.Entity<User>(entity =>
+        {
+            entity.ToContainer("Users")
+                .HasPartitionKey(x => x.Email)
+                .HasKey(x => x.Id)
+                ;
+            entity.OwnsMany(x => x.RefreshTokens);
+            /*entity.OwnsMany(x => x.RefreshTokens);*/
+            /*entity.HasMany(x => x.RefreshTokens)
+                .WithOne(x => x.User);*/
+
+        });
+            
 
         modelBuilder.Entity<Game>()
             .ToContainer("Games")
             .HasPartitionKey(x => x.Id)
             .HasKey(x => x.Id);
+
+        //modelBuilder.Entity<RefreshToken>(entity =>
+        //{
+        //    entity.ToContainer("RefreshTokens")
+        //        .HasPartitionKey(x => x.UserId)
+        //        .HasKey(x => x.Id);
+
+        //    entity.OwnsOne(x => x.User);
+        //    //entity.OwnsOne(x => x.User);
+        //    /*entity.HasOne(d => d.User)
+        //        .WithMany(x => x.RefreshTokens)
+        //        .HasForeignKey(x => x.UserId);*/
+        //});
 
         #endregion
 

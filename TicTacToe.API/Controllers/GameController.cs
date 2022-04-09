@@ -1,15 +1,15 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TicTacToe.API.ViewModels.Game;
-using TicTacToe.BLL.Dto;
 using TicTacToe.BLL.Dto.Game;
 using TicTacToe.BLL.Services.Interfaces;
-using TicTacToe.BLL.SignalR;
 
 namespace TicTacToe.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [Authorize]
     public class GameController : ControllerBase
     {
         private readonly IGameService _gameService;

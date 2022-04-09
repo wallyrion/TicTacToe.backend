@@ -12,6 +12,7 @@ public static class ServiceDependencies
         services.AddSingleton<IUserService, UserService>();
         services.AddSingleton<IGameService, GameService>();
         services.AddSingleton<INotificationService, NotificationService>();
+        services.AddSingleton<ITokenService, TokenService>();
         services.AddScoped<TicTacToeContext>();
         return services;
     }

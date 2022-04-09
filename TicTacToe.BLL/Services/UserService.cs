@@ -26,7 +26,14 @@ public class UserService : IUserService
         }
 
         var userEntity = _mapper.Map<User>(loginDto);
+
+        var salt = PasswordHelper.GetSecureSalt();
+        var passwordHash = PasswordHelper.HashUsingPbkdf2(loginDto.Password, salt);
+        userEntity.PasswordSalt = Convert.ToBase64String(salt);
+        userEntity.PasswordHash = passwordHash;
+
         var userCreated = await context.Users.AddAsync(userEntity);
+
         await context.SaveChangesAsync();
 
         return _mapper.Map<UserDto>(userCreated.Entity);
@@ -35,7 +42,19 @@ public class UserService : IUserService
     public async Task<UserDto?> Login(string email, string password)
     {
         await using var context = new TicTacToeContext();
-        var user = await context.Users.FirstOrDefaultAsync(x => x.Email == email && x.Password == password);
+        var user = await context.Users.FirstOrDefaultAsync(x => x.Email == email);
+
+        if (user == null)
+        {
+            return null;
+        }
+        var passwordHash = PasswordHelper.HashUsingPbkdf2(password, Convert.FromBase64String(user.PasswordSalt));
+
+        if (passwordHash != user.PasswordHash)
+        {
+            return null;
+        }
+
         return _mapper.Map<UserDto>(user);
     }
 }

@@ -13,7 +13,7 @@ public class TokenHelper
     public const string Secret =
         "p0GXO6VuVZLRPef0tyO9jCqK4uZufDa6LP4n8Gj+8hQPB30f94pFiECAnPeMi5N6VT3/uscoGH7+zJrv4AuuPg==";
 
-    public static async Task<string> GenerateAccessToken(int userId)
+    public static async Task<string> GenerateAccessToken(Guid userId)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Convert.FromBase64String(Secret);

@@ -1,4 +1,8 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using TicTacToe.BLL.Infrastructure;
+using TicTacToe.BLL.Services;
 using TicTacToe.BLL.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +16,24 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.RegisterBllDependencies();
 builder.Services.AddSignalR();
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = TokenHelper.Issuer,
+            ValidAudience = TokenHelper.Audience,
+            IssuerSigningKey = new SymmetricSecurityKey(Convert.FromBase64String(TokenHelper.Secret)),
+            ClockSkew = TimeSpan.Zero
+        };
+
+    });
+
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 app.UseCors(x =>
@@ -31,6 +53,7 @@ app.UseRouting();
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 app.UseEndpoints(endpoints =>
 {
