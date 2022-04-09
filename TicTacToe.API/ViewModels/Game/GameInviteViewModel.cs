@@ -1,15 +1,13 @@
-﻿namespace TicTacToe.API.ViewModels.Game;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace TicTacToe.API.ViewModels.Game;
 
 public class GameInviteViewModel
 {
-    public string CurrentUserEmail {get; set; }
+    [Required]
+    public string CurrentUserEmail {get; set; } = null!;
 
-    public string SecondUserEmail { get; set; }
+    [Required]
+    public string SecondUserEmail { get; set; } = null!;
 }
 
-public class GameAcceptInvitationViewModel
-{
-    public string InviterEmail { get; set; }
-
-    public string InvitedEmail { get; set; }
-}

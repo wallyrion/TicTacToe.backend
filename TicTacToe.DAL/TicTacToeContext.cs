@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using TicTacToe.API.Models;
+using TicTacToe.DAL.Entities;
 
-namespace TicTacToe.API;
+namespace TicTacToe.DAL;
 
 public sealed class TicTacToeContext : DbContext
 {
@@ -33,13 +33,13 @@ public sealed class TicTacToeContext : DbContext
         modelBuilder.Entity<User>()
             .ToContainer("Users")
             .HasPartitionKey(x => x.Email)
+            .HasKey(x => x.Id)
             ;
 
         modelBuilder.Entity<Game>()
             .ToContainer("Games")
             .HasPartitionKey(x => x.Id)
-            ;
-
+            .HasKey(x => x.Id);
 
         #endregion
 

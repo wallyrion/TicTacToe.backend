@@ -1,5 +1,5 @@
-using TicTacToe.API;
-using TicTacToe.API.SignalR;
+using TicTacToe.BLL.Infrastructure;
+using TicTacToe.BLL.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,10 +10,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddSingleton<IGameService, GameService>();
-builder.Services.AddScoped<TicTacToeContext>();
+builder.Services.RegisterBllDependencies();
 builder.Services.AddSignalR();
 
 var app = builder.Build();

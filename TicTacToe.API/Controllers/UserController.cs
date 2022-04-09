@@ -1,9 +1,8 @@
-using System.Diagnostics;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using TicTacToe.API.Models;
-using TicTacToe.API.ViewModels;
+using TicTacToe.API.ViewModels.User;
+using TicTacToe.BLL.Dto.User;
+using TicTacToe.BLL.Services.Interfaces;
 
 namespace TicTacToe.API.Controllers
 {
@@ -26,34 +25,34 @@ namespace TicTacToe.API.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<User>> Login(LoginViewModel loginViewModel)
+        public async Task<ActionResult<UserVM>> Login(LoginRequestVM loginRequestVM)
         {
-            var user = await _userService.Login(loginViewModel.Email, loginViewModel.Password);
+            var user = await _userService.Login(loginRequestVM.Email, loginRequestVM.Password);
 
             if (user == null)
             {
                 return NotFound();
             }
 
-            return Ok(_mapper.Map<UserViewModel>(user));
+            return Ok(_mapper.Map<UserVM>(user));
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult<UserViewModel>> Register(LoginViewModel loginModel)
+        public async Task<ActionResult<UserVM>> Register(LoginRequestVM loginModel)
         {
-            var user = _mapper.Map<User>(loginModel);
-            await _userService.Register(user);
-            var userViewModel = _mapper.Map<UserViewModel>(user);
+            var loginDto = _mapper.Map<LoginDto>(loginModel);
+            var user = await _userService.Register(loginDto);
 
-            return Ok(userViewModel);
+            var userVM = _mapper.Map<UserVM>(user);
+
+            return Ok(userVM);
         }
 
 
         [HttpGet("test")]
-        public async Task<ActionResult<UserViewModel>> Test(LoginViewModel loginModel)
+        public Task<ActionResult<UserVM>> Test()
         {
-            
-            return Ok(DateTime.UtcNow.ToString());
+            return Task.FromResult<ActionResult<UserVM>>(Ok(DateTime.UtcNow.ToString()));
         }
     }
 }

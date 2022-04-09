@@ -1,12 +1,10 @@
-using System.Diagnostics;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using TicTacToe.API.Dto;
-using TicTacToe.API.Models;
-using TicTacToe.API.SignalR;
-using TicTacToe.API.ViewModels;
 using TicTacToe.API.ViewModels.Game;
+using TicTacToe.BLL.Dto;
+using TicTacToe.BLL.Dto.Game;
+using TicTacToe.BLL.Services.Interfaces;
+using TicTacToe.BLL.SignalR;
 
 namespace TicTacToe.API.Controllers
 {
@@ -29,9 +27,9 @@ namespace TicTacToe.API.Controllers
         }
 
         [HttpPost("Invite")]
-        public async Task<ActionResult<GameInvitation>> InviteToGame(GameInviteViewModel viewModel)
+        public async Task<ActionResult<GameInvitationDto>> InviteToGame(GameInviteViewModel viewModel)
         {
-            var gameDto = _mapper.Map<GameInviteDto>(viewModel);
+            var gameDto = _mapper.Map<GameInviteRequestDto>(viewModel);
             var result = await _gameService.Invite(gameDto);
 
             return Ok(result);

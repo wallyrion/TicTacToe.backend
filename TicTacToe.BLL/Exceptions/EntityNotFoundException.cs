@@ -1,4 +1,4 @@
-﻿namespace TicTacToe.API.Exceptions
+﻿namespace TicTacToe.BLL.Exceptions
 {
     public class EntityNotFoundException : Exception
     {

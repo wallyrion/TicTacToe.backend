@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace TicTacToe.API.ViewModels
+namespace TicTacToe.API.ViewModels.User
 {
-    public class LoginViewModel
+    public class LoginRequestVM
     {
         [Required]
         public string Email { get; init; }
