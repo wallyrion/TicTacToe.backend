@@ -1,5 +1,7 @@
+using System.ComponentModel.DataAnnotations;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using TicTacToe.API.ViewModels;
 using TicTacToe.API.ViewModels.User;
 using TicTacToe.BLL.Dto.User;
 using TicTacToe.BLL.Services.Interfaces;
@@ -56,6 +58,18 @@ namespace TicTacToe.API.Controllers
 
             var response = new TokenResponseVM(userVM, tokens.Item1, tokens.Item2);
             return Ok(response);
+        }
+
+
+        [HttpPost("refresh_token")]
+        public async Task<IActionResult> RefreshToken([Required]RefreshTokenRequestVM refreshTokenRequest)
+        {
+            var refreshTokenRequestDto = _mapper.Map<RefreshTokenRequestDto>(refreshTokenRequest);
+            await _tokenService.ValidateRefreshTokenAsync(refreshTokenRequestDto);
+
+            var tokenResponse = await _tokenService.GenerateTokensAsync(refreshTokenRequestDto.UserId);
+
+            return Ok(new RefreshTokensResponseVM(tokenResponse.Item1, tokenResponse.Item2));
         }
 
 

@@ -12,8 +12,6 @@ public class UserMap : Profile
     {
         CreateMap<LoginRequestVM, LoginDto>();
         CreateMap<UserDto, UserVM>();
-        
-        //CreateMap<User, UserVM>();
-
+        CreateMap<RefreshTokenRequestVM, RefreshTokenRequestDto>();
     }
 }

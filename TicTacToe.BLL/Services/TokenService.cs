@@ -1,6 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using TicTacToe.BLL.Dto.User;
 using TicTacToe.BLL.Exceptions;
+using TicTacToe.BLL.Helpers;
 using TicTacToe.BLL.Services.Interfaces;
+using TicTacToe.Common;
 using TicTacToe.DAL;
 using TicTacToe.DAL.Entities;
 
@@ -22,13 +25,12 @@ public class TokenService : ITokenService
             throw new EntityNotFoundException($"User {userId} not found");
         }
 
-        var salt = PasswordHelper.GetSecureSalt();
-        var refreshTokenHashed = PasswordHelper.HashUsingPbkdf2(refreshToken, salt);
+        var passwordSalt = Convert.FromBase64String(userRecord.PasswordSalt);
+        var refreshTokenHashed = PasswordHelper.HashUsingPbkdf2(refreshToken, passwordSalt);
 
         if (userRecord.RefreshTokens.Any())
         {
-            userRecord.RefreshTokens = userRecord.RefreshTokens.Where(item => item.ExpiryDate < DateTime.UtcNow).ToList();
-
+            userRecord.RefreshTokens = userRecord.RefreshTokens.Where(item => item.ExpiryDate > DateTime.UtcNow).ToList();
         }
 
         userRecord.RefreshTokens?.Add(new RefreshToken
@@ -36,7 +38,6 @@ public class TokenService : ITokenService
             ExpiryDate = DateTime.Now.AddDays(14),
             UserId = userId,
             TokenHash = refreshTokenHashed,
-            TokenSalt = Convert.ToBase64String(salt),
             CreatedDate = DateTime.UtcNow
         });
 
@@ -46,5 +47,31 @@ public class TokenService : ITokenService
         var token = new Tuple<string, string>(accessToken, refreshToken);
 
         return token;
+    }
+
+    public async Task ValidateRefreshTokenAsync(RefreshTokenRequestDto refreshTokenRequest)
+    {
+        await using var context = new TicTacToeContext();
+
+        var user = await context.Users.FirstOrDefaultAsync(o => o.Id == refreshTokenRequest.UserId);
+
+        if (user == null)
+        {
+            throw new EntityNotFoundException($"User {refreshTokenRequest.UserId} not found");
+        }
+        var refreshTokenToValidateHash = PasswordHelper.HashUsingPbkdf2(refreshTokenRequest.RefreshToken, Convert.FromBase64String(user.PasswordSalt));
+
+        var token = user.RefreshTokens.FirstOrDefault(token => token.TokenHash == refreshTokenToValidateHash);
+
+        if (token == null)
+        {
+            throw new InvalidOperationException("invalid refresh token.");
+        }
+
+        if (token.ExpiryDate < DateTimeProvider.UtcNow)
+        {
+            throw new InvalidOperationException("Refresh token expired");
+        }
+
     }
 }

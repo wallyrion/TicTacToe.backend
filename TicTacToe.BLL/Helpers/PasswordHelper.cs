@@ -1,7 +1,7 @@
 ﻿using System.Security.Cryptography;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 
-namespace TicTacToe.BLL.Services;
+namespace TicTacToe.BLL.Helpers;
 
 public class PasswordHelper
 {

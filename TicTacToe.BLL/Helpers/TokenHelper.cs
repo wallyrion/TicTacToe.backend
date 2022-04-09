@@ -3,7 +3,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using Microsoft.IdentityModel.Tokens;
 
-namespace TicTacToe.BLL.Services;
+namespace TicTacToe.BLL.Helpers;
 
 public class TokenHelper
 {
