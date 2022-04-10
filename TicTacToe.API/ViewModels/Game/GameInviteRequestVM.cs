@@ -2,7 +2,7 @@
 
 namespace TicTacToe.API.ViewModels.Game;
 
-public class GameInviteViewModel
+public class GameInviteRequestVM
 {
     [Required]
     public string CurrentUserEmail {get; set; } = null!;

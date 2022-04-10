@@ -27,9 +27,9 @@ namespace TicTacToe.API.Controllers
         }
 
         [HttpPost("Invite")]
-        public async Task<ActionResult<GameInvitationDto>> InviteToGame(GameInviteViewModel viewModel)
+        public async Task<ActionResult<GameInvitationDto>> InviteToGame(GameInviteRequestVM requestVM)
         {
-            var gameDto = _mapper.Map<GameInviteRequestDto>(viewModel);
+            var gameDto = _mapper.Map<GameInviteRequestDto>(requestVM);
             var result = await _gameService.Invite(gameDto);
 
             return Ok(result);

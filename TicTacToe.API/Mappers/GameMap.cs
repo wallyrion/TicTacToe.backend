@@ -9,6 +9,6 @@ public class GameMap : Profile
 {
     public GameMap()
     {
-        CreateMap<GameInviteViewModel, GameInviteRequestDto>();
+        CreateMap<GameInviteRequestVM, GameInviteRequestDto>();
     }
 }
