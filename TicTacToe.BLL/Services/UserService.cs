@@ -58,4 +58,12 @@ public class UserService : IUserService
 
         return _mapper.Map<UserDto>(user);
     }
+
+    public async Task<UserDto?> GetUser(Guid id)
+    {
+        await using var context = new TicTacToeContext();
+        var user = await context.Users.FindAsync(id);
+
+        return _mapper.Map<UserDto>(user);
+    }
 }

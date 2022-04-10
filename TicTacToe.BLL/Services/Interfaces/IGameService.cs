@@ -6,4 +6,5 @@ public interface IUserService
 {
     Task<UserDto> Register(LoginDto user);
     Task<UserDto?> Login(string email, string password);
+    Task<UserDto?> GetUser(Guid id);
 }

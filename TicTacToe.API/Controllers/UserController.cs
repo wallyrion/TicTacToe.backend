@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TicTacToe.API.ViewModels;
 using TicTacToe.API.ViewModels.User;
@@ -10,7 +11,7 @@ namespace TicTacToe.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class UserController : ControllerBase
+    public class UserController : BaseApiController
     {
         private readonly IUserService _userService;
         private readonly IMapper _mapper;
@@ -70,6 +71,21 @@ namespace TicTacToe.API.Controllers
             var tokenResponse = await _tokenService.GenerateTokensAsync(refreshTokenRequestDto.UserId);
 
             return Ok(new RefreshTokensResponseVM(tokenResponse.Item1, tokenResponse.Item2));
+        }
+
+        [Authorize]
+        [HttpGet("my-info")]
+        public async Task<ActionResult<UserVM>> GetCurrentUserInfo()
+        {
+            var user = await _userService.GetUser(UserId);
+
+            if (user == null)
+            {
+                return NotFound("User not found");
+            }
+
+            var userVM = _mapper.Map<UserVM>(user);
+            return Ok(userVM);
         }
 
 
