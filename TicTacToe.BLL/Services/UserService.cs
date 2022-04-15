@@ -48,13 +48,14 @@ public class UserService : IUserService
 
         if (user == null)
         {
-            throw new ValidationException($"User {email} not found");
+            throw new ValidationException($"User email {email} or password are incorrect");
         }
+
         var passwordHash = PasswordHelper.HashUsingPbkdf2(password, Convert.FromBase64String(user.PasswordSalt));
 
         if (passwordHash != user.PasswordHash)
         {
-            return null;
+            throw new ValidationException($"User email {email} or password are incorrect");
         }
 
         return _mapper.Map<UserDto>(user);
