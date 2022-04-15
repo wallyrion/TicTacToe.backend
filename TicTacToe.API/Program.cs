@@ -1,9 +1,8 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using TicTacToe.API.Middleware;
 using TicTacToe.BLL.Helpers;
 using TicTacToe.BLL.Infrastructure;
-using TicTacToe.BLL.Services;
 using TicTacToe.BLL.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -42,6 +41,9 @@ app.UseCors(x =>
         .AllowAnyHeader()
         .AllowCredentials()
         .WithOrigins("http://localhost:4200", "http://192.168.68.120:4200"));
+
+app.UseMiddleware<ErrorHandlerMiddleware>();
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

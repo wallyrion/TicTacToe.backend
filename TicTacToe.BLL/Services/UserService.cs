@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using TicTacToe.BLL.Dto.User;
+using TicTacToe.BLL.Exceptions;
 using TicTacToe.BLL.Helpers;
 using TicTacToe.BLL.Services.Interfaces;
 using TicTacToe.DAL;
@@ -47,7 +48,7 @@ public class UserService : IUserService
 
         if (user == null)
         {
-            return null;
+            throw new ValidationException($"User {email} not found");
         }
         var passwordHash = PasswordHelper.HashUsingPbkdf2(password, Convert.FromBase64String(user.PasswordSalt));
 

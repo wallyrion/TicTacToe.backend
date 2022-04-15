@@ -1,6 +1,4 @@
-﻿using TicTacToe.BLL.Dto;
-using TicTacToe.BLL.Dto.Game;
-using TicTacToe.BLL.SignalR;
+﻿using TicTacToe.BLL.Dto.Game;
 
 namespace TicTacToe.BLL.Services.Interfaces;
 

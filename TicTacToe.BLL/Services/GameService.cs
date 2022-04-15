@@ -1,9 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using TicTacToe.BLL.Dto;
 using TicTacToe.BLL.Dto.Game;
 using TicTacToe.BLL.Exceptions;
 using TicTacToe.BLL.Services.Interfaces;
-using TicTacToe.BLL.SignalR;
 using TicTacToe.DAL;
 using TicTacToe.DAL.Entities;
 

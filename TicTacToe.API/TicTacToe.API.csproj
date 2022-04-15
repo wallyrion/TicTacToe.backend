@@ -24,4 +24,8 @@
     <ProjectReference Include="..\TicTacToe.BLL\TicTacToe.BLL.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Middleware\" />
+  </ItemGroup>
+
 </Project>

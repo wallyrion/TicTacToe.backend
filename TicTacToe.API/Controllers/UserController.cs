@@ -2,7 +2,6 @@ using System.ComponentModel.DataAnnotations;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using TicTacToe.API.ViewModels;
 using TicTacToe.API.ViewModels.User;
 using TicTacToe.BLL.Dto.User;
 using TicTacToe.BLL.Services.Interfaces;
@@ -34,11 +33,6 @@ namespace TicTacToe.API.Controllers
         public async Task<ActionResult<UserVM>> Login(LoginRequestVM loginRequestVM)
         {
             var user = await _userService.Login(loginRequestVM.Email, loginRequestVM.Password);
-
-            if (user == null)
-            {
-                return NotFound();
-            }
 
             Tuple<string, string> tokens = await _tokenService.GenerateTokensAsync(user.Id);
 
