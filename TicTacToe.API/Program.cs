@@ -43,6 +43,24 @@ try
                 IssuerSigningKey = new SymmetricSecurityKey(Convert.FromBase64String(TokenHelper.Secret)),
                 ClockSkew = TimeSpan.Zero
             };
+
+            /*options.Events = new JwtBearerEvents
+            {
+                OnMessageReceived = context =>
+                {
+                    var accessToken = context.Request.Query["access_token"];
+
+                    // If the request is for our hub...
+                    var path = context.HttpContext.Request.Path;
+                    if (!string.IsNullOrEmpty(accessToken) &&
+                        (path.StartsWithSegments("/hubs/game")))
+                    {
+                        // Read the token out of the query string
+                        context.Token = accessToken;
+                    }
+                    return Task.CompletedTask;
+                }
+            };*/
         });
 
     builder.Services.AddAuthorization();
@@ -56,6 +74,7 @@ try
             .WithOrigins("http://localhost:4200", "http://192.168.68.120:4200"));
 
     app.UseMiddleware<ErrorHandlerMiddleware>();
+    app.UseMiddleware<WebSocketsMiddleware>();
 
 
     // Configure the HTTP request pipeline.
@@ -73,7 +92,7 @@ try
     app.UseAuthorization();
     app.UseEndpoints(endpoints =>
     {
-        endpoints.MapHub<GameHub>("/game");
+        endpoints.MapHub<GameHub>("hubs/game");
         //endpoints.MapHub<BroadcastHub>("/broadcast");
     });
 

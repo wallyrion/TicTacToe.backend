@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using TicTacToe.BLL.Extensions;
+using TicTacToe.BLL.Services;
 
 namespace TicTacToe.BLL.SignalR;
 
@@ -20,6 +22,16 @@ public class BroadcastHub : Hub<IHubClient>
 
 public class GameHub : Hub
 {
+    public override Task OnConnectedAsync()
+    {
+        return base.OnConnectedAsync();
+    }
+
+    public override Task OnDisconnectedAsync(Exception exception)
+    {
+        return base.OnDisconnectedAsync(exception);
+    }
+
     public Task Send(string data)
     {
         return Clients.All.SendAsync("Send", data);

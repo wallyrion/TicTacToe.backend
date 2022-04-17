@@ -4,6 +4,6 @@ namespace TicTacToe.BLL.Services.Interfaces;
 
 public interface INotificationService
 {
-    Task SendInvitationAsync(GameInvitationDto gameInvitation);
-    Task AcceptInvitationAsync(Guid gameId);
+    Task SendInvitationAsync(GameInvitationDto gameInvitation, Guid userId);
+    Task AcceptInvitationAsync(Guid gameId, Guid userId);
 }

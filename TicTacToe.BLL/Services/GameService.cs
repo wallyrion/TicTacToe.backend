@@ -48,15 +48,17 @@ public class GameService : IGameService
 
         var gameInvitationWs = new GameInvitationDto
         {
-            OpponentId = opponent.Id,
+            User1Id = currentUser.Id,
+            User1Email = currentUser.Email,
+            User2Id = opponent.Id,
+            User2Email = opponent.Email,
             GameId = game.Id,
             FirstTurnPlayerId = game.FirstTurnPlayerId,
             InvitationDate = game.InvitationDate,
             AcceptedDate = game.AcceptedDate,
-            OpponentEmail = opponent.Email
         };
 
-        await _notificationService.SendInvitationAsync(gameInvitationWs);
+        await _notificationService.SendInvitationAsync(gameInvitationWs, opponent.Id);
 
         return gameInvitationWs;
     }
@@ -74,6 +76,6 @@ public class GameService : IGameService
 
         game.AcceptedDate = DateTime.UtcNow;
         await context.SaveChangesAsync();
-        await _notificationService.AcceptInvitationAsync(gameId);
+        await _notificationService.AcceptInvitationAsync(gameId, game.User1Id);
     }
 }
