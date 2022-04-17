@@ -82,6 +82,15 @@ namespace TicTacToe.API.Controllers
             return Ok(userVM);
         }
 
+        [Authorize]
+        [HttpGet("search")]
+        public async Task<ActionResult<List<UserVM>>> Search(string part, CancellationToken token)
+        {
+            var usersDto = await _userService.Search(part, UserId, token);
+
+            return _mapper.Map<List<UserVM>>(usersDto);
+        }
+
 
         [HttpGet("test")]
         public Task<ActionResult<UserVM>> Test()

@@ -68,4 +68,18 @@ public class UserService : IUserService
 
         return _mapper.Map<UserDto>(user);
     }
+
+    public async Task<List<UserDto>> Search(string part, Guid userId, CancellationToken cancellationToken)
+    {
+        await using var context = new TicTacToeContext();
+
+        var partLower = part.ToLowerInvariant();
+        var users = await context.Users
+            .Where(x =>x.Id != userId && (
+                x.Email.ToLower().Contains(partLower)) || x.Name.ToLower().Contains(partLower)
+            )
+            .Take(30)
+            .ToListAsync(cancellationToken);
+        return _mapper.Map<List<UserDto>>(users);
+    }
 }
