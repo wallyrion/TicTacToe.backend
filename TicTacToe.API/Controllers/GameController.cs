@@ -10,7 +10,7 @@ namespace TicTacToe.API.Controllers
     [ApiController]
     [Route("[controller]")]
     [Authorize]
-    public class GameController : ControllerBase
+    public class GameController : BaseApiController
     {
         private readonly IGameService _gameService;
         private readonly IMapper _mapper;
@@ -29,8 +29,7 @@ namespace TicTacToe.API.Controllers
         [HttpPost("Invite")]
         public async Task<ActionResult<GameInvitationDto>> InviteToGame([FromBody] GameInviteRequestVM requestVM)
         {
-            var gameDto = _mapper.Map<GameInviteRequestDto>(requestVM);
-            var result = await _gameService.Invite(gameDto);
+            var result = await _gameService.Invite(UserId, requestVM.OpponentId);
 
             return Ok(result);
         }

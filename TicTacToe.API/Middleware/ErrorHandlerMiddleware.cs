@@ -37,7 +37,7 @@ public class ErrorHandlerMiddleware
                 _logger.LogError(error, $"Unhandled exception. ElapsedMilliseconds: {elapsed}");
             }
 
-            if (error is ValidationException)
+            if (error is InvalidRequestException)
             {
                 response.StatusCode = (int)HttpStatusCode.BadRequest;
             }

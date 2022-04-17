@@ -18,34 +18,29 @@ public class GameService : IGameService
         _notificationService = notificationService;
     }
 
-    public async Task<GameInvitationDto> Invite(GameInviteRequestDto gameInviteRequestDto)
+    public async Task<GameInvitationDto> Invite(Guid currentUserId, Guid opponentId)
     {
-        if (gameInviteRequestDto.CurrentUserEmail == gameInviteRequestDto.SecondUserEmail)
-        {
-            throw new Exception("Can not create game with the same user");
-        }
-
         await using var context = new TicTacToeContext();
 
-        var user1 = await context.Users.FirstOrDefaultAsync(x => x.Email == gameInviteRequestDto.CurrentUserEmail);
-        if (user1 == null)
+        var currentUser = await context.Users.FindAsync(currentUserId);
+        if (currentUser == null)
         {
-            throw new EntityNotFoundException($"User with email {gameInviteRequestDto.CurrentUserEmail} not found");
+            throw new InvalidRequestException($"User {currentUserId} not found");
         }
 
-        var user2 = await context.Users.FirstOrDefaultAsync(x => x.Email == gameInviteRequestDto.SecondUserEmail);
-        if (user2 == null)
+        var opponent = await context.Users.FindAsync(opponentId);
+        if (opponent == null)
         {
-            throw new EntityNotFoundException($"User with email {gameInviteRequestDto.SecondUserEmail} not found");
+            throw new InvalidRequestException($"Opponent user {opponent} not found");
         }
 
         var firstUser = new Random().Next(0, 2);
         var game = new Game
         {
-            User1Id = user1.Id,
-            User2Id = user2.Id,
+            User1Id = currentUser.Id,
+            User2Id = opponent.Id,
             InvitationDate = DateTime.UtcNow,
-            FirstTurnPlayerId = firstUser == 0 ? user1.Id : user2.Id
+            FirstTurnPlayerId = firstUser == 0 ? currentUser.Id : opponent.Id
         };
 
         await context.Games.AddAsync(game);
@@ -53,14 +48,12 @@ public class GameService : IGameService
 
         var gameInvitationWs = new GameInvitationDto
         {
-            User1Id = user1.Id,
-            User2Id = user2.Id,
-            User1Email = user1.Email,
-            User2Email = user2.Email,
+            OpponentId = opponent.Id,
             GameId = game.Id,
             FirstTurnPlayerId = game.FirstTurnPlayerId,
             InvitationDate = game.InvitationDate,
-            AcceptedDate = game.AcceptedDate
+            AcceptedDate = game.AcceptedDate,
+            OpponentEmail = opponent.Email
         };
 
         await _notificationService.SendInvitationAsync(gameInvitationWs);
@@ -83,5 +76,4 @@ public class GameService : IGameService
         await context.SaveChangesAsync();
         await _notificationService.AcceptInvitationAsync(gameId);
     }
-
 }
