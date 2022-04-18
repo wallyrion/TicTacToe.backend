@@ -19,4 +19,8 @@
     <ProjectReference Include="..\TicTacToe.DAL\TicTacToe.DAL.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="BusinessValidators\" />
+  </ItemGroup>
+
 </Project>

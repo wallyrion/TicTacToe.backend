@@ -6,4 +6,5 @@ public interface IGameService
 {
     Task Accept(Guid gameId);
     Task<GameInvitationDto> Invite(Guid currentUserId, Guid opponentId);
+    Task<GameEventDto> HandleNextTurn(NextTurnRequestDto dto);
 }

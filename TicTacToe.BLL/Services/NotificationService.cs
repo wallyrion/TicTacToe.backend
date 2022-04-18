@@ -14,13 +14,23 @@ public class NotificationService: INotificationService
         _hubContext = hubContext;
     }
 
-    public async Task SendInvitationAsync(GameInvitationDto gameInvitation, Guid userId)
+    public async Task SendInvitationAsync(GameInvitationDto gameInvitation, Guid userIdToNotify)
     {
-        await _hubContext.Clients.User(userId.ToString()).SendAsync("invite", gameInvitation);
+        await SendToSpecificUser(userIdToNotify, "invite", gameInvitation);
     }
 
-    public async Task AcceptInvitationAsync(Guid gameId, Guid userId)
+    public async Task AcceptInvitationAsync(Guid gameId, Guid userIdToNotify)
     {
-        await _hubContext.Clients.User(userId.ToString()).SendAsync("accepted", gameId);
+        await SendToSpecificUser(userIdToNotify, "accepted", gameId);
+    }
+
+    public async Task HandleOpponentTurn(GameEventDto gameEvent, Guid userIdToNotify)
+    {
+        await SendToSpecificUser(userIdToNotify, "opponentTurn", gameEvent);
+    }
+
+    private async Task SendToSpecificUser(Guid userId, string methodName, object data)
+    {
+        await _hubContext.Clients.User(userId.ToString()).SendAsync(methodName, data);
     }
 }

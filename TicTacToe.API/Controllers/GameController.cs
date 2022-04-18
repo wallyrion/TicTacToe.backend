@@ -42,6 +42,14 @@ namespace TicTacToe.API.Controllers
             return Ok();
         }
 
+        [HttpPost("next-turn")]
+        public async Task<GameEventDto> HandleNextTurn(NextTurnRequestVM request)
+        {
+            var dto = _mapper.Map<NextTurnRequestDto>(request);
+            dto.UserId = UserId;
+            var gameEventResponse = await _gameService.HandleNextTurn(dto);
 
+            return gameEventResponse;
+        }
     }
 }

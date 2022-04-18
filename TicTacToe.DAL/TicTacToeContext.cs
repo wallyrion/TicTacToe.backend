@@ -47,6 +47,10 @@ public sealed class TicTacToeContext : DbContext
             .ToContainer("Games")
             .HasPartitionKey(x => x.Id)
             .HasKey(x => x.Id);
+        modelBuilder.Entity<Game>()
+            .OwnsMany(x => x.Field);
+        modelBuilder.Entity<Game>()
+            .OwnsOne(x => x.Outcome);
 
         //modelBuilder.Entity<RefreshToken>(entity =>
         //{

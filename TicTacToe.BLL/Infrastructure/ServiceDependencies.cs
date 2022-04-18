@@ -13,6 +13,7 @@ public static class ServiceDependencies
         services.AddSingleton<IGameService, GameService>();
         services.AddSingleton<INotificationService, NotificationService>();
         services.AddSingleton<ITokenService, TokenService>();
+        services.AddSingleton<IGameProcessService, GameProcessService>();
         services.AddScoped<TicTacToeContext>();
         return services;
     }

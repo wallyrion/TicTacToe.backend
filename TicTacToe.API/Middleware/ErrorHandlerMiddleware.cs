@@ -53,7 +53,8 @@ public class ErrorHandlerMiddleware
             var result = JsonConvert.SerializeObject(new
             {
                 elapsed,
-                message = error.Message
+                message = error.Message,
+                trace = error.StackTrace
             });
             await response.WriteAsync(result);
         }
