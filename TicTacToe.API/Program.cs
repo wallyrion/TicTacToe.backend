@@ -54,7 +54,7 @@ try
         x.AllowAnyMethod()
             .AllowAnyHeader()
             .AllowCredentials()
-            .WithOrigins("http://localhost:4200", "http://192.168.68.120:4200"));
+            .WithOrigins("http://localhost:4200", "http://192.168.68.120:4200", "https://wallyrion.github.io/TicTacToe.ClientApp"));
 
     app.UseMiddleware<ErrorHandlerMiddleware>();
     app.UseMiddleware<WebSocketsMiddleware>();
