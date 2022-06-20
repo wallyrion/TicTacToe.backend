@@ -11,19 +11,25 @@ namespace TicTacToe.BLL.Services;
 
 public class TokenService : ITokenService
 {
+    private readonly TicTacToeContext _context;
+
+    public TokenService(TicTacToeContext context)
+    {
+        _context = context;
+    }
+
     public async Task<Tuple<string, string>> GenerateTokensAsync(Guid userId)
     {
-        await using var context = new TicTacToeContext();
-        var accessToken = await TokenHelper.GenerateAccessToken(userId);
-        var refreshToken = await TokenHelper.GenerateRefreshToken();
-
-        var userRecord = await context.Users
+        var userRecord = await _context.Users
             .FirstOrDefaultAsync(e => e.Id == userId);
 
         if (userRecord == null)
         {
             throw new EntityNotFoundException($"User {userId} not found");
         }
+
+        var accessToken = await TokenHelper.GenerateAccessToken(userId);
+        var refreshToken = await TokenHelper.GenerateRefreshToken();
 
         var passwordSalt = Convert.FromBase64String(userRecord.PasswordSalt);
         var refreshTokenHashed = PasswordHelper.HashUsingPbkdf2(refreshToken, passwordSalt);
@@ -33,16 +39,18 @@ public class TokenService : ITokenService
             userRecord.RefreshTokens = userRecord.RefreshTokens.Where(item => item.ExpiryDate > DateTime.UtcNow).ToList();
         }
 
-        userRecord.RefreshTokens?.Add(new RefreshToken
+        var refreshTokens = userRecord.RefreshTokens.ToList();
+        refreshTokens.Add(new RefreshToken
         {
             ExpiryDate = DateTime.Now.AddDays(14),
             UserId = userId,
             TokenHash = refreshTokenHashed,
             CreatedDate = DateTime.UtcNow
         });
+        userRecord.RefreshTokens = refreshTokens;
 
 
-        await context.SaveChangesAsync();
+        await _context.SaveChangesAsync();
 
         var token = new Tuple<string, string>(accessToken, refreshToken);
 
@@ -51,9 +59,7 @@ public class TokenService : ITokenService
 
     public async Task ValidateRefreshTokenAsync(RefreshTokenRequestDto refreshTokenRequest)
     {
-        await using var context = new TicTacToeContext();
-
-        var user = await context.Users.FirstOrDefaultAsync(o => o.Id == refreshTokenRequest.UserId);
+        var user = await _context.Users.FirstOrDefaultAsync(o => o.Id == refreshTokenRequest.UserId);
 
         if (user == null)
         {

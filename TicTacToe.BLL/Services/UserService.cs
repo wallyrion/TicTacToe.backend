@@ -12,16 +12,16 @@ namespace TicTacToe.BLL.Services;
 public class UserService : IUserService
 {
     private readonly IMapper _mapper;
-
-    public UserService(IMapper mapper)
+    private readonly TicTacToeContext _context;
+    public UserService(IMapper mapper, TicTacToeContext context)
     {
         _mapper = mapper;
+        _context = context;
     }
 
     public async Task<UserDto> Register(LoginDto loginDto)
     {
-        await using var context = new TicTacToeContext();
-        var emailExist = await context.Users.FirstOrDefaultAsync(x => x.Email == loginDto.Email);
+        var emailExist = await _context.Users.FirstOrDefaultAsync(x => x.Email == loginDto.Email);
         if (emailExist != null)
         {
             throw new Exception($"Email {emailExist.Email} already exists.");
@@ -34,17 +34,16 @@ public class UserService : IUserService
         userEntity.PasswordSalt = Convert.ToBase64String(salt);
         userEntity.PasswordHash = passwordHash;
 
-        var userCreated = await context.Users.AddAsync(userEntity);
+        var userCreated = await _context.Users.AddAsync(userEntity);
 
-        await context.SaveChangesAsync();
+        await _context.SaveChangesAsync();
 
         return _mapper.Map<UserDto>(userCreated.Entity);
     }
 
     public async Task<UserDto?> Login(string email, string password)
     {
-        await using var context = new TicTacToeContext();
-        var user = await context.Users.FirstOrDefaultAsync(x => x.Email == email);
+        var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == email);
 
         if (user == null)
         {
@@ -63,23 +62,20 @@ public class UserService : IUserService
 
     public async Task<UserDto?> GetUser(Guid id)
     {
-        await using var context = new TicTacToeContext();
-        var user = await context.Users.FindAsync(id);
+        var user = await _context.Users.FindAsync(id);
 
         return _mapper.Map<UserDto>(user);
     }
 
-    public async Task<List<UserDto>> Search(string part, Guid userId, CancellationToken cancellationToken)
+    public async Task<List<UserSearchDto>> Search(string part, Guid userId, CancellationToken cancellationToken)
     {
-        await using var context = new TicTacToeContext();
-
         var partLower = part.ToLowerInvariant();
-        var users = await context.Users
-            .Where(x =>x.Id != userId && (
-                x.Email.ToLower().Contains(partLower)) || x.Name.ToLower().Contains(partLower)
+        List<User> users = await _context.Users
+            .Where(x => x.Id != userId && (
+                x.Email.ToLower().Contains(partLower) || x.Name.ToLower().Contains(partLower))
             )
             .Take(30)
             .ToListAsync(cancellationToken);
-        return _mapper.Map<List<UserDto>>(users);
+        return _mapper.Map<List<UserSearchDto>>(users);
     }
 }

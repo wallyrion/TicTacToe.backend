@@ -8,3 +8,11 @@ public record UserDto
     public Guid Id { get; set; }
     public DateTime CreatedDate { get; set; }
 }
+
+public record UserSearchDto
+{
+    public string Name { get; set; } = null!;
+    public string Email { get; set; } = null!;
+    public Guid Id { get; set; }
+    public bool IsAlreadyInvited { get; set; }
+}

@@ -7,5 +7,5 @@ public interface IUserService
     Task<UserDto> Register(LoginDto user);
     Task<UserDto?> Login(string email, string password);
     Task<UserDto?> GetUser(Guid id);
-    Task<List<UserDto>> Search(string part, Guid userId, CancellationToken cancellationToken);
+    Task<List<UserSearchDto>> Search(string part, Guid userId, CancellationToken cancellationToken);
 }

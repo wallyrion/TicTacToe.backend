@@ -15,29 +15,28 @@ public class GameService : IGameService
 {
     private readonly INotificationService _notificationService;
     private readonly IGameProcessService _gameProcessService;
+    private readonly TicTacToeContext _context;
     private readonly IMapper _mapper;
     public GameService(
         INotificationService notificationService,
         IGameProcessService gameProcessService,
-        IMapper mapper
-        )
+        IMapper mapper, TicTacToeContext context)
     {
         _notificationService = notificationService;
         _gameProcessService = gameProcessService;
         _mapper = mapper;
+        _context = context;
     }
 
     public async Task<GameInvitationDto> Invite(Guid currentUserId, Guid opponentId)
     {
-        await using var context = new TicTacToeContext();
-
-        var currentUser = await context.Users.FindAsync(currentUserId);
+        var currentUser = await _context.Users.FindAsync(currentUserId);
         if (currentUser == null)
         {
             throw new InvalidRequestException($"User {currentUserId} not found");
         }
 
-        var opponent = await context.Users.FindAsync(opponentId);
+        var opponent = await _context.Users.FindAsync(opponentId);
         if (opponent == null)
         {
             throw new InvalidRequestException($"Opponent user {opponent} not found");
@@ -50,11 +49,11 @@ public class GameService : IGameService
             User2Id = opponent.Id,
             InvitationDate = DateTime.UtcNow,
             FirstTurnPlayerId = firstUser == 0 ? currentUser.Id : opponent.Id,
-            Field = new CellEvent[9].Select(x => new CellEvent()).ToArray()
+            Field = new CellEvent[9].Select(_ => new CellEvent()).ToArray()
         };
 
-        await context.Games.AddAsync(game);
-        await context.SaveChangesAsync();
+        await _context.Games.AddAsync(game);
+        await _context.SaveChangesAsync();
 
         var gameInvitationWs = new GameInvitationDto
         {
@@ -75,16 +74,14 @@ public class GameService : IGameService
 
     public async Task<GameEventDto> HandleNextTurn(NextTurnRequestDto dto)
     {
-        await using var context = new TicTacToeContext();
-
-        Game? game = await context.Games.FindAsync(dto.GameId);
+        Game? game = await _context.Games.FindAsync(dto.GameId);
 
         GameValidator.ValidateNextTurnRequest(game, dto.GameId);
 
         var currentDate = DateTimeProvider.UtcNow;
 
         var field = game!.Field.ToArray();
-        field![dto.CellIndex] = new CellEvent
+        field[dto.CellIndex] = new CellEvent
         {
             UserId = dto.UserId,
             TurnDate = currentDate
@@ -104,7 +101,7 @@ public class GameService : IGameService
             TurnUserId = dto.UserId,
             CellEvents = _mapper.Map<CellEventDto[]>(field)
         };
-        await context.SaveChangesAsync();
+        await _context.SaveChangesAsync();
         var userIdToNotify = game.User1Id == dto.UserId ? game.User2Id : game.User1Id;
         await _notificationService.HandleOpponentTurn(gameEvent, userIdToNotify);
         return gameEvent;
@@ -112,9 +109,7 @@ public class GameService : IGameService
 
     public async Task Accept(Guid gameId)
     {
-        await using var context = new TicTacToeContext();
-
-        var game = await context.Games.FirstOrDefaultAsync(x => x.Id == gameId);
+        var game = await _context.Games.FirstOrDefaultAsync(x => x.Id == gameId);
 
         if (game == null)
         {
@@ -122,7 +117,7 @@ public class GameService : IGameService
         }
 
         game.AcceptedDate = DateTime.UtcNow;
-        await context.SaveChangesAsync();
+        await _context.SaveChangesAsync();
         await _notificationService.AcceptInvitationAsync(gameId, game.User1Id);
     }
 }

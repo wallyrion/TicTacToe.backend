@@ -1,6 +1,6 @@
 ﻿namespace TicTacToe.DAL.Entities;
 
-public partial record RefreshToken
+public class RefreshToken
 {
     public Guid Id { get; set; }
     public Guid UserId { get; set; }
@@ -9,3 +9,4 @@ public partial record RefreshToken
     public DateTime ExpiryDate { get; set; }
     public virtual User User { get; set; }
 }
+

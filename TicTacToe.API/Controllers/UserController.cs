@@ -91,6 +91,14 @@ namespace TicTacToe.API.Controllers
             return _mapper.Map<List<UserVM>>(usersDto);
         }
 
+        [Authorize]
+        [HttpGet("search-for-invite")]
+        public async Task<List<UserSearchVM>> SearchForInvite(string part, CancellationToken token)
+        {
+            var usersDto = await _userService.Search(part, UserId, token);
+
+            return _mapper.Map<List<UserSearchVM>>(usersDto);
+        }
 
         [HttpGet("test")]
         public Task<ActionResult<UserVM>> Test()

@@ -5,6 +5,7 @@ using TicTacToe.API.Middleware;
 using TicTacToe.BLL.Helpers;
 using TicTacToe.BLL.Infrastructure;
 using TicTacToe.BLL.SignalR;
+using TicTacToe.Common.Options;
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
@@ -29,7 +30,7 @@ try
     builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
     builder.Services.RegisterBllDependencies();
     builder.Services.AddSignalR();
-
+    builder.Services.Configure<TicTacToeDbOptions>(builder.Configuration.GetRequiredSection(TicTacToeDbOptions.SectionName));
     builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         .AddJwtBearer(options =>
         {

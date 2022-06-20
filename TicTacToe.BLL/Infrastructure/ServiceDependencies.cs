@@ -9,11 +9,12 @@ public static class ServiceDependencies
 {
     public static IServiceCollection RegisterBllDependencies(this IServiceCollection services)
     {
-        services.AddSingleton<IUserService, UserService>();
-        services.AddSingleton<IGameService, GameService>();
+        services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IGameService, GameService>();
         services.AddSingleton<INotificationService, NotificationService>();
-        services.AddSingleton<ITokenService, TokenService>();
+        services.AddScoped<ITokenService, TokenService>();
         services.AddSingleton<IGameProcessService, GameProcessService>();
+
         services.AddScoped<TicTacToeContext>();
         return services;
     }
